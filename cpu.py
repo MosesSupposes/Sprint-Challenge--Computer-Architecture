@@ -21,7 +21,8 @@ class CPU:
         "JNE": 0b01010110,
         "AND": 0b10101000,
         "OR": 0b10101010,
-        "XOR": 0b10101011
+        "XOR": 0b10101011,
+        "NOT": 0b01101001
     }
 
     commands_inverted = {
@@ -40,7 +41,8 @@ class CPU:
         0b01010110: "JNE",
         0b10101000: "AND",
         0b10101010: "OR",
-        0b10101011: "XOR"
+        0b10101011: "XOR",
+        0b01101001: "NOT"
     }
 
     def __init__(self):
@@ -67,7 +69,8 @@ class CPU:
             "JNE": self.JNE,
             "AND": self.AND,
             "OR": self.OR,
-            "XOR": self.XOR
+            "XOR": self.XOR,
+            "NOT": self.NOT
         }
 
     def load(self, program):
@@ -110,6 +113,9 @@ class CPU:
         
         elif op == "XOR": 
             self.reg[reg_a] = self.reg[reg_a] ^ self.reg[reg_b]
+        
+        elif op == "NOT":
+            self.reg[reg_a] = (lambda n, numbits=8: (1 << numbits) - 1 - n)(self.reg[reg_a])
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -165,6 +171,12 @@ class CPU:
     def XOR(self):
         self.alu("XOR", self.ram[self.pc + 1], self.ram[self.pc + 2])
         self.pc += 3
+    
+    def NOT(self):
+        # Passing in the same value to both arguments is intentional. 
+        # The "NOT" operator only needs one register, unlike other ALU operations.
+        self.alu("NOT", self.ram[self.pc + 1], self.ram[self.pc + 1])
+        self.pc += 2
 
     def PUSH(self):
         # The seventh register is dedicated to keeping track of the stack pointer
