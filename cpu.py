@@ -6,7 +6,7 @@ class CPU:
     """Main CPU class."""
 
     commands = {
-        "HLT": 0b01,
+        "HLT": 0b00000001,
         "LDI": 0b10000010,
         "PRN": 0b01000111,
         "ADD": 0b10100000,
@@ -24,7 +24,8 @@ class CPU:
         "XOR": 0b10101011,
         "NOT": 0b01101001,
         "SHL": 0b10101100,
-        "SHR": 0b10101101
+        "SHR": 0b10101101,
+        "MOD": 0b10100100
     }
 
     commands_inverted = {
@@ -46,7 +47,8 @@ class CPU:
         0b10101011: "XOR",
         0b01101001: "NOT",
         0b10101100: "SHL",
-        0b10101101: "SHR"
+        0b10101101: "SHR",
+        0b10100100: "MOD"
     }
 
     def __init__(self):
@@ -76,7 +78,8 @@ class CPU:
             "XOR": self.XOR,
             "NOT": self.NOT,
             "SHL": self.SHL,
-            "SHR": self.SHR
+            "SHR": self.SHR,
+            "MOD": self.MOD
         }
 
     def load(self, program):
@@ -128,6 +131,13 @@ class CPU:
         
         elif op == "SHR":
             self.reg[reg_a] >>= self.reg[reg_b]
+        
+        elif op == "MOD":
+            if self.reg[reg_b] == 0:
+                print("Can't perfrom a MOD operation on a zero value")
+                self.ram[self.pc + 3] = self.commands["HLT"]
+            else:
+                self.reg[reg_a] %=  self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -196,6 +206,10 @@ class CPU:
     
     def SHR(self):
         self.alu("SHR", self.ram[self.pc + 1], self.ram[self.pc + 2])
+        self.pc += 3
+    
+    def MOD(self):
+        self.alu("MOD", self.ram[self.pc + 1], self.ram[self.pc + 2])
         self.pc += 3
 
     def PUSH(self):
