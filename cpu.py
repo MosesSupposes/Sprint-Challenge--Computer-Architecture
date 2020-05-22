@@ -19,7 +19,8 @@ class CPU:
         "JMP": 0b01010100,
         "JEQ": 0b01010101,
         "JNE": 0b01010110,
-        "AND": 0b10101000
+        "AND": 0b10101000,
+        "OR": 0b10101010
     }
 
     commands_inverted = {
@@ -36,7 +37,8 @@ class CPU:
         0b01010100: "JMP",
         0b01010101: "JEQ",
         0b01010110: "JNE",
-        0b10101000: "AND"
+        0b10101000: "AND",
+        0b10101010: "OR"
     }
 
     def __init__(self):
@@ -98,6 +100,9 @@ class CPU:
         
         elif op == "AND": 
             self.reg[reg_a] = self.reg[reg_a] & self.reg[reg_b]
+        
+        elif op == "OR":
+            self.reg[reg_a] = self.reg[reg_b] | self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -144,6 +149,10 @@ class CPU:
     
     def AND(self):
         self.alu("AND", self.ram[self.pc + 1], self.ram[self.pc + 2])
+        self.pc += 3
+    
+    def OR(self):
+        self.alu("OR", self.ram[self.pc + 1], self.ram[self.pc + 2])
         self.pc += 3
 
     def PUSH(self):
