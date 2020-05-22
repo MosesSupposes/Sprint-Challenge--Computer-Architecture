@@ -18,7 +18,8 @@ class CPU:
         "CMP": 0b10100111,
         "JMP": 0b01010100,
         "JEQ": 0b01010101,
-        "JNE": 0b01010110
+        "JNE": 0b01010110,
+        "AND": 0b10101000
     }
 
     commands_inverted = {
@@ -34,7 +35,8 @@ class CPU:
         0b10100111: "CMP",
         0b01010100: "JMP",
         0b01010101: "JEQ",
-        0b01010110: "JNE"
+        0b01010110: "JNE",
+        0b10101000: "AND"
     }
 
     def __init__(self):
@@ -58,7 +60,8 @@ class CPU:
             "CMP": self.CMP,
             "JMP": self.JMP,
             "JEQ": self.JEQ,
-            "JNE": self.JNE
+            "JNE": self.JNE,
+            "AND": self.AND
         }
 
     def load(self, program):
@@ -92,6 +95,9 @@ class CPU:
 
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+        
+        elif op == "AND": 
+            self.reg[reg_a] = self.reg[reg_a] & self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -134,6 +140,10 @@ class CPU:
     
     def MUL(self):
         self.alu("MUL", self.ram[self.pc + 1], self.ram[self.pc + 2])
+        self.pc += 3
+    
+    def AND(self):
+        self.alu("AND", self.ram[self.pc + 1], self.ram[self.pc + 2])
         self.pc += 3
 
     def PUSH(self):
