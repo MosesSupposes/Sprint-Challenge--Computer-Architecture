@@ -17,7 +17,8 @@ class CPU:
         "RET": 0b00010001,
         "CMP": 0b10100111,
         "JMP": 0b01010100,
-        "JEQ": 0b01010101
+        "JEQ": 0b01010101,
+        "JNE": 0b01010110
     }
 
     commands_inverted = {
@@ -32,7 +33,8 @@ class CPU:
         0b00010001: "RET",
         0b10100111: "CMP",
         0b01010100: "JMP",
-        0b01010101: "JEQ"
+        0b01010101: "JEQ",
+        0b01010110: "JNE"
     }
 
     def __init__(self):
@@ -55,7 +57,8 @@ class CPU:
             "RET": self.RET,
             "CMP": self.CMP,
             "JMP": self.JMP,
-            "JEQ": self.JEQ
+            "JEQ": self.JEQ,
+            "JNE": self.JNE
         }
 
     def load(self, program):
@@ -186,6 +189,13 @@ class CPU:
         register_containing_register_to_jump_to = self.ram[self.pc + 1]
         # If the equal flag is set to true...
         if self.fl == 0b00000001:
+            self.pc = self.reg[register_containing_register_to_jump_to]
+        else:
+            self.pc += 2
+    
+    def JNE(self):
+        register_containing_register_to_jump_to = self.ram[self.pc + 1]
+        if self.fl != 0b00000001:
             self.pc = self.reg[register_containing_register_to_jump_to]
         else:
             self.pc += 2
