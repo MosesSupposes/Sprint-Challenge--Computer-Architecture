@@ -15,6 +15,7 @@ class CPU:
         "POP": 0b01000110,
         "CALL": 0b01010000,
         "RET": 0b00010001,
+        "CMP": 0b10100111
     }
 
     commands_inverted = {
@@ -26,7 +27,8 @@ class CPU:
         0b01000101: "PUSH",
         0b01000110: "POP",
         0b01010000: "CALL",
-        0b00010001: "RET"
+        0b00010001: "RET",
+        0b10100111: "CMP"
     }
 
     def __init__(self):
@@ -36,6 +38,7 @@ class CPU:
          # Initialize the stack pointer. R7 is the dedicated stack pointer.
         self.reg[7] = 0xf4
         self.pc = 0
+        self.fl = 0b00000000
         self.branch_table = {
             "HLT": self.HLT,
             "LDI": self.LDI,
@@ -45,7 +48,8 @@ class CPU:
             "PUSH": self.PUSH,
             "POP": self.POP,
             "CALL": self.CALL,
-            "RET": self.RET
+            "RET": self.RET,
+            "CMP": self.CMP
         }
 
     def load(self, program):
@@ -152,6 +156,22 @@ class CPU:
         address_to_jump_to = self.ram[self.reg[SP]]
         self.reg[SP] += 1
         self.pc = address_to_jump_to
+    
+    def CMP(self): 
+        reg_a = self.ram[self.pc + 1]
+        reg_b = self.ram[self.pc + 2]
+        #00000LGE
+        if self.reg[reg_a] < self.reg[reg_b]:
+            self.fl = 0b00000100
+        
+        elif self.reg[reg_a] > self.reg[reg_b]:
+            self.fl = 0b00000010
+        
+        # If the two registers are equal in value...
+        else:
+            self.fl = 0b00000001
+
+        self.pc += 3
 
     def run(self):
         """Run the CPU."""
