@@ -20,11 +20,12 @@ class CPU:
         "JEQ": 0b01010101,
         "JNE": 0b01010110,
         "AND": 0b10101000,
-        "OR": 0b10101010
+        "OR": 0b10101010,
+        "XOR": 0b10101011
     }
 
     commands_inverted = {
-        0b01: "HLT",
+        0b00000001: "HLT",
         0b10000010: "LDI",
         0b01000111: "PRN",
         0b10100000: "ADD",
@@ -38,7 +39,8 @@ class CPU:
         0b01010101: "JEQ",
         0b01010110: "JNE",
         0b10101000: "AND",
-        0b10101010: "OR"
+        0b10101010: "OR",
+        0b10101011: "XOR"
     }
 
     def __init__(self):
@@ -63,7 +65,9 @@ class CPU:
             "JMP": self.JMP,
             "JEQ": self.JEQ,
             "JNE": self.JNE,
-            "AND": self.AND
+            "AND": self.AND,
+            "OR": self.OR,
+            "XOR": self.XOR
         }
 
     def load(self, program):
@@ -102,7 +106,10 @@ class CPU:
             self.reg[reg_a] = self.reg[reg_a] & self.reg[reg_b]
         
         elif op == "OR":
-            self.reg[reg_a] = self.reg[reg_b] | self.reg[reg_b]
+            self.reg[reg_a] = self.reg[reg_a] | self.reg[reg_b]
+        
+        elif op == "XOR": 
+            self.reg[reg_a] = self.reg[reg_a] ^ self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -153,6 +160,10 @@ class CPU:
     
     def OR(self):
         self.alu("OR", self.ram[self.pc + 1], self.ram[self.pc + 2])
+        self.pc += 3
+    
+    def XOR(self):
+        self.alu("XOR", self.ram[self.pc + 1], self.ram[self.pc + 2])
         self.pc += 3
 
     def PUSH(self):
