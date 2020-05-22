@@ -16,7 +16,8 @@ class CPU:
         "CALL": 0b01010000,
         "RET": 0b00010001,
         "CMP": 0b10100111,
-        "JMP": 0b01010100
+        "JMP": 0b01010100,
+        "JEQ": 0b01010101
     }
 
     commands_inverted = {
@@ -30,7 +31,8 @@ class CPU:
         0b01010000: "CALL",
         0b00010001: "RET",
         0b10100111: "CMP",
-        0b01010100: "JMP"
+        0b01010100: "JMP",
+        0b01010101: "JEQ"
     }
 
     def __init__(self):
@@ -52,7 +54,8 @@ class CPU:
             "CALL": self.CALL,
             "RET": self.RET,
             "CMP": self.CMP,
-            "JMP": self.JMP
+            "JMP": self.JMP,
+            "JEQ": self.JEQ
         }
 
     def load(self, program):
@@ -163,13 +166,12 @@ class CPU:
     def CMP(self): 
         reg_a = self.ram[self.pc + 1]
         reg_b = self.ram[self.pc + 2]
-        #00000LGE
+        
+        # Flag placeholders: 00000LGE
         if self.reg[reg_a] < self.reg[reg_b]:
             self.fl = 0b00000100
-        
         elif self.reg[reg_a] > self.reg[reg_b]:
             self.fl = 0b00000010
-        
         # If the two registers are equal in value...
         else:
             self.fl = 0b00000001
@@ -179,6 +181,15 @@ class CPU:
     def JMP(self):
         register_containing_register_to_jump_to = self.ram[self.pc + 1]
         self.pc = self.reg[register_containing_register_to_jump_to]
+    
+    def JEQ(self):
+        register_containing_register_to_jump_to = self.ram[self.pc + 1]
+        # If the equal flag is set to true...
+        if self.fl == 0b00000001:
+            self.pc = self.reg[register_containing_register_to_jump_to]
+        else:
+            self.pc += 2
+
 
     def run(self):
         """Run the CPU."""
