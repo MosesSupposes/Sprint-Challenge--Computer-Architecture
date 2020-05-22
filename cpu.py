@@ -23,7 +23,8 @@ class CPU:
         "OR": 0b10101010,
         "XOR": 0b10101011,
         "NOT": 0b01101001,
-        "SHL": 0b10101100
+        "SHL": 0b10101100,
+        "SHR": 0b10101101
     }
 
     commands_inverted = {
@@ -44,7 +45,8 @@ class CPU:
         0b10101010: "OR",
         0b10101011: "XOR",
         0b01101001: "NOT",
-        0b10101100: "SHL"
+        0b10101100: "SHL",
+        0b10101101: "SHR"
     }
 
     def __init__(self):
@@ -73,7 +75,8 @@ class CPU:
             "OR": self.OR,
             "XOR": self.XOR,
             "NOT": self.NOT,
-            "SHL": self.SHL
+            "SHL": self.SHL,
+            "SHR": self.SHR
         }
 
     def load(self, program):
@@ -122,6 +125,9 @@ class CPU:
         
         elif op == "SHL":
             self.reg[reg_a] <<= self.reg[reg_b]
+        
+        elif op == "SHR":
+            self.reg[reg_a] >>= self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -186,6 +192,10 @@ class CPU:
     
     def SHL(self):
         self.alu("SHL", self.ram[self.pc + 1], self.ram[self.pc + 2])
+        self.pc += 3
+    
+    def SHR(self):
+        self.alu("SHR", self.ram[self.pc + 1], self.ram[self.pc + 2])
         self.pc += 3
 
     def PUSH(self):
