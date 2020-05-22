@@ -15,7 +15,8 @@ class CPU:
         "POP": 0b01000110,
         "CALL": 0b01010000,
         "RET": 0b00010001,
-        "CMP": 0b10100111
+        "CMP": 0b10100111,
+        "JMP": 0b01010100
     }
 
     commands_inverted = {
@@ -28,7 +29,8 @@ class CPU:
         0b01000110: "POP",
         0b01010000: "CALL",
         0b00010001: "RET",
-        0b10100111: "CMP"
+        0b10100111: "CMP",
+        0b01010100: "JMP"
     }
 
     def __init__(self):
@@ -49,7 +51,8 @@ class CPU:
             "POP": self.POP,
             "CALL": self.CALL,
             "RET": self.RET,
-            "CMP": self.CMP
+            "CMP": self.CMP,
+            "JMP": self.JMP
         }
 
     def load(self, program):
@@ -172,6 +175,10 @@ class CPU:
             self.fl = 0b00000001
 
         self.pc += 3
+    
+    def JMP(self):
+        register_containing_register_to_jump_to = self.ram[self.pc + 1]
+        self.pc = self.reg[register_containing_register_to_jump_to]
 
     def run(self):
         """Run the CPU."""
